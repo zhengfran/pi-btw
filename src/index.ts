@@ -41,7 +41,8 @@ export default function btw(pi: ExtensionAPI): void {
     ctx.ui.setStatus(
       "btw",
       threads.size
-        ? `BTW ${threads.size}${busy ? ` · ${busy} running` : ""}`
+        ? ctx.ui.theme.fg("dim", `btw:${threads.size}`) +
+            (busy ? ctx.ui.theme.fg("accent", ` (${busy} running)`) : "")
         : undefined,
     );
     for (const listener of listeners) listener();
