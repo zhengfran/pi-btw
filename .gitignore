@@ -1,0 +1,13 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.env
+.env.*
+*.pem
+*.key
+*.log
+*.tmp
+*.swp
+.DS_Store
+.vscode/
+.idea/
