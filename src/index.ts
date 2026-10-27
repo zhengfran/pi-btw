@@ -5,6 +5,7 @@ import type {
   ExtensionCommandContext,
   ExtensionContext,
 } from "@earendil-works/pi-coding-agent";
+import { createFooter } from "./footer.ts";
 import { showThread } from "./overlay.ts";
 import {
   breakOut,
@@ -35,16 +36,32 @@ export default function btw(pi: ExtensionAPI): void {
   let selected: string | undefined;
   let generation = 0;
   let overlayOpen = false;
+  let footerInstalled = false;
+  let redrawFooter: (() => void) | undefined;
 
   function refresh(ctx: ExtensionContext): void {
-    const busy = [...threads.values()].filter((thread) => thread.busy).length;
-    ctx.ui.setStatus(
-      "btw",
-      threads.size
-        ? ctx.ui.theme.fg("dim", `btw:${threads.size}`) +
-            (busy ? ctx.ui.theme.fg("accent", ` (${busy} running)`) : "")
-        : undefined,
-    );
+    if (ctx.mode === "tui") {
+      if (threads.size && !footerInstalled) {
+        ctx.ui.setFooter((tui, theme, data) => {
+          redrawFooter = () => tui.requestRender();
+          return createFooter(ctx, tui, theme, data, () => {
+            const busy = [...threads.values()].filter(
+              (thread) => thread.busy,
+            ).length;
+            return (
+              theme.fg("dim", `btw:${threads.size}`) +
+              (busy ? theme.fg("accent", ` (${busy} running)`) : "")
+            );
+          });
+        });
+        footerInstalled = true;
+      } else if (!threads.size && footerInstalled) {
+        ctx.ui.setFooter(undefined);
+        footerInstalled = false;
+        redrawFooter = undefined;
+      }
+      redrawFooter?.();
+    }
     for (const listener of listeners) listener();
   }
 
@@ -68,7 +85,12 @@ export default function btw(pi: ExtensionAPI): void {
     refresh(ctx);
   });
 
-  pi.on("session_shutdown", async () => {
+  pi.on("session_shutdown", async (_event, ctx) => {
+    if (footerInstalled) {
+      ctx.ui.setFooter(undefined);
+      footerInstalled = false;
+      redrawFooter = undefined;
+    }
     generation++;
     await Promise.all(
       [...threads.values()].map((thread) => thread.session?.abort()),

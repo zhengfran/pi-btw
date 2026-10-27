@@ -41,6 +41,9 @@ Inside the popup:
 
 ## Behaviour
 
+BTW shares the project/branch footer line; other extensions' statuses stay visible.
+It uses Pi's custom footer while threads exist, so avoid other footer replacements.
+
 Threads inherit the main conversation's context and can inspect files using
 `read`, `grep`, `find`, and `ls`. They cannot edit files or run shell commands,
 and their answers stay out of the main agent's context. File access is not an
