@@ -3,6 +3,30 @@
 Persistent read-only side conversations for [Pi](https://pi.dev), with a bordered
 popup, streaming answers, a native working spinner, and independent session breakout.
 
+## Why another pi-btw?
+
+**I created this package because none of the existing BTW extensions I researched
+satisfied my workflow as a whole.** I wanted more than a disposable side question,
+but I did not want a second unrestricted agent changing files in the background.
+
+The combination I needed was:
+
+- **Multiple independent, resumable threads** within one main session—not a single
+  scratch conversation that gets replaced by the next question.
+- **Read-only file inspection** with `read`, `grep`, `find`, and `ls`—not just answers
+  from conversation context, and no shell or write tools.
+- **Isolation from the main task:** side questions should neither interrupt the
+  main agent nor insert their answers into its model context.
+- **A path from question to real work:** break out a thread, with its inherited
+  context and full discussion, into an independent normal Pi session. In Herdr,
+  that means opening and focusing a new tab, not just printing a launch command.
+- **A clear terminal UI:** visible popup boundaries, streaming answers, a working
+  animation, and deliberate lifecycle controls—Esc keeps a thread; Ctrl+C cancels,
+  deletes it, and closes the popup.
+
+Other packages covered parts of this. This one exists to bring these requirements
+together for my workflow, not to claim that every other BTW package is inadequate.
+
 ## Install
 
 ```sh
